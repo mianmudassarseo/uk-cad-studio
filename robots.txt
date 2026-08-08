@@ -1,6 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /send-mail.php
-Disallow: /thank-you.html
-
-Sitemap: https://www.ukcadstudio.co.uk/sitemap.xml
