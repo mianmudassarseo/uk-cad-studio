@@ -7,27 +7,27 @@ Responsive multi-page site built with semantic HTML, CSS and vanilla JavaScript.
 
 ## Before you go live — 3 required steps
 
-### 1. Connect the contact form on Vercel (about 5 minutes) — REQUIRED
+### 1. Connect the contact form (5 minutes) — REQUIRED
 
-The site now uses a Vercel Serverless Function at `/api/contact` instead of PHP.
-Email is sent through the Resend HTTP API, so it works on Vercel's static hosting.
+The form is fully built and tested, but email sending is **off by default**.
+Open `send-mail.php` and look at the block near the top.
 
-1. Create a free Resend account: https://resend.com
-2. Create an API key in Resend.
-3. In Vercel open **Project → Settings → Environment Variables** and add:
-   - `RESEND_API_KEY` = your Resend API key
-   - `CONTACT_TO` = `raotipusultaan@gmail.com`
-   - `CONTACT_FROM` = `UK CAD Studio <onboarding@resend.dev>`
-4. Redeploy the project after adding the variables.
-5. Submit a test enquiry from the live website.
+Right now `SMTP_ENABLED` is `false`, so it falls back to PHP's `mail()`.
+That usually works, but Gmail frequently sends `mail()` messages to spam.
+**For reliable delivery, use SMTP:**
 
-For initial testing with `onboarding@resend.dev`, Resend normally allows delivery to the
-email address associated with your Resend account. If you later want to use a custom
-`From` address, verify a domain in Resend and change `CONTACT_FROM` in Vercel.
+1. Turn on 2-Step Verification: https://myaccount.google.com/security
+2. Create an App Password: https://myaccount.google.com/apppasswords
+3. In `send-mail.php` set:
+   ```php
+   const SMTP_ENABLED = true;
+   const SMTP_PASS    = 'your-16-character-app-password';
+   ```
+4. Send yourself a test enquiry from `contact.html`.
 
-**Security:** never put API keys, Gmail passwords, App Passwords or other secrets in
-HTML, JavaScript, PHP, GitHub, or any file committed to the repository. Keep them only
-in Vercel Environment Variables.
+Your normal Gmail password will **not** work — it must be an App Password.
+
+Never commit real credentials to a public Git repository.
 
 ### 2. Replace the illustrations with real photography — RECOMMENDED
 
@@ -58,7 +58,7 @@ address and company number, then delete those notes.
 ## Also worth doing
 
 - **Update the domain.** Everything currently points at
-  `https://www.ukcadstudio.co.uk`. If that changes, find and replace it across
+  `https://uk-cad-studio.vercel.app`. If that changes, find and replace it across
   all `.html` files plus `sitemap.xml` and `robots.txt`.
 - **Add your real review data.** The homepage rating card and two testimonials
   use representative UK client names. Replace with verified reviews before
@@ -67,7 +67,7 @@ address and company number, then delete those notes.
 - **Submit `sitemap.xml`** in Google Search Console.
 - **Add analytics** and a cookie banner if you introduce any tracking. The site
   currently sets no cookies, which is why no banner is included.
-- **Consider a UK phone number.** The site uses `+92 305 6205832` as supplied.
+- **Consider a UK phone number.** The site uses `+44 7535 049277` as supplied.
   UK customers searching locally often hesitate at a non-UK number; a UK
   virtual landline forwarding to the same handset is inexpensive.
 
@@ -86,7 +86,7 @@ terms.html              Terms of use
 
 styles.css              Original stylesheet + appended multi-page components
 script.js               Nav, dropdowns, reveals, slider, form validation
-api/contact.js          Vercel serverless contact-form handler
+send-mail.php           Form handler with built-in SMTP client
 
 sitemap.xml             All 33 indexable URLs
 robots.txt              Crawl rules
@@ -99,9 +99,9 @@ locations/              index + 12 location pages
 blog/                   index + 6 articles
 ```
 
-Most page links are relative. The contact form posts to `/api/contact`, so form
-submissions must be tested on the deployed Vercel site rather than by opening the HTML
-files directly from disk.
+Links are **relative**, so the site works from a domain root, a subfolder, or
+opened directly from disk. The only exception is `send-mail.php`, which needs
+PHP — so the form requires real hosting to work.
 
 ---
 
@@ -111,7 +111,7 @@ files directly from disk.
   dark version for the header, a white version for the navy footer, favicons
   and a 1200×630 social share image.
 - **Contact details** updated to `raotipusultaan@gmail.com` and
-  `+92 305 6205832` on all 37 pages, including `tel:` and `mailto:` links and
+  `+44 7535 049277` on all 37 pages, including `tel:` and `mailto:` links and
   structured data.
 - **Navigation** gained Services and Locations dropdowns (needed for 30+ pages).
   Uses the existing nav styling; collapses to an accordion on mobile.
@@ -164,3 +164,9 @@ python3 -m http.server 8000
 
 The contact form will not send from `file://` or a plain static server — it
 needs PHP. To test it locally: `php -S localhost:8000`
+
+## Contact form on Vercel
+
+The old PHP mail handler has been removed because this site is deployed as a static Vercel project. All forms are now prepared to submit through Formspree from `script.js`.
+
+Set the `FORMSPREE_ENDPOINT` value in `script.js` to the endpoint supplied by Formspree. See `FORM_SETUP.txt` for the exact steps.

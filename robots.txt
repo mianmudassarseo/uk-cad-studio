@@ -2,6 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /thank-you.html
 
-Sitemap: https://www.ukcadstudio.co.uk/sitemap.xml
-
-Disallow: /api/
+Sitemap: https://uk-cad-studio.vercel.app/sitemap.xml

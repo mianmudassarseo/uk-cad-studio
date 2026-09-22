@@ -107,6 +107,10 @@
   }
 
   /* ---------------- Contact form ---------------- */
+  // One Formspree endpoint is used by every enquiry/newsletter form on the site.
+  // After creating a Formspree form, replace the placeholder below with the
+  // endpoint Formspree gives you, e.g. https://formspree.io/f/abcdwxyz
+  var FORMSPREE_ENDPOINT = 'PASTE_FORMSPREE_ENDPOINT_HERE';
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
   function fieldWrap(input) {
@@ -191,6 +195,10 @@
     box.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
   }
 
+  function formspreeConfigured() {
+    return /^https:\/\/formspree\.io\/f\/[A-Za-z0-9_-]+$/.test(FORMSPREE_ENDPOINT);
+  }
+
   document.querySelectorAll('form[data-mail]').forEach(function (form) {
     // Clear errors as the user corrects them.
     form.addEventListener('input', function (e) {
@@ -201,41 +209,55 @@
       e.preventDefault();
       if (!validate(form)) return;
 
+      if (!formspreeConfigured()) {
+        showStatus(form, 'err', 'The contact form is awaiting its Formspree connection. Please email us directly at raotipusultaan@gmail.com.');
+        return;
+      }
+
       var button = form.querySelector('[type="submit"]');
       var original = button ? button.textContent : '';
       if (button) {
+        button.disabled = true;
         button.setAttribute('aria-busy', 'true');
         button.textContent = 'Sending…';
       }
 
-      var payload = {};
-      new FormData(form).forEach(function (value, key) {
-        payload[key] = value;
-      });
+      var payload = new FormData(form);
+      payload.set('page', document.title + ' — ' + window.location.pathname);
+      payload.set('form_type', form.classList.contains('contact-form') ? 'Project enquiry' : 'Newsletter / website form');
+      payload.set('_subject', form.classList.contains('contact-form') ? 'New UK CAD Studio project enquiry' : 'New UK CAD Studio website form submission');
 
-      fetch(form.getAttribute('action'), {
+      fetch(FORMSPREE_ENDPOINT, {
         method: 'POST',
+        body: payload,
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify(payload)
+          'Accept': 'application/json'
+        }
       })
-        .then(function (res) { return res.json().catch(function () { return { ok: res.ok }; }); })
-        .then(function (data) {
-          if (data && data.ok) {
-            showStatus(form, 'ok', data.message || 'Thank you — your enquiry has been sent. We will reply within one working day.');
-            form.reset();
-          } else {
-            showStatus(form, 'err', (data && data.message) || 'Sorry, your message could not be sent. Please email us directly at raotipusultaan@gmail.com.');
-          }
+        .then(function (res) {
+          return res.json().catch(function () { return {}; }).then(function (data) {
+            if (!res.ok) {
+              var message = 'Sorry, your message could not be sent. Please email us directly at raotipusultaan@gmail.com.';
+              if (data && data.errors && data.errors.length && data.errors[0].message) {
+                message = data.errors[0].message;
+              } else if (data && data.error) {
+                message = data.error;
+              }
+              throw new Error(message);
+            }
+            return data;
+          });
         })
-        .catch(function () {
-          showStatus(form, 'err', 'Sorry, there was a network problem. Please email us directly at raotipusultaan@gmail.com.');
+        .then(function () {
+          showStatus(form, 'ok', 'Thank you — your enquiry has been sent. We will reply within one working day.');
+          form.reset();
+        })
+        .catch(function (err) {
+          showStatus(form, 'err', err && err.message ? err.message : 'Sorry, there was a network problem. Please email us directly at raotipusultaan@gmail.com.');
         })
         .finally(function () {
           if (button) {
+            button.disabled = false;
             button.removeAttribute('aria-busy');
             button.textContent = original;
           }

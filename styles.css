@@ -79,6 +79,8 @@ p { margin: 0; }
 .btn--secondary:hover { border-color: var(--navy); }
 .btn--gold { background: var(--gold); color: var(--navy); }
 .btn--gold:hover { box-shadow: 0 12px 26px rgba(200,169,106,.28); }
+.header-cta { gap: 8px; white-space: nowrap; padding-inline: 16px; font-size: .79rem; }
+.header-cta .whatsapp-icon { width: 18px; height: 18px; flex: 0 0 18px; fill: currentColor; }
 .btn--light { background: white; color: var(--navy); }
 .btn--full { width: 100%; }
 
