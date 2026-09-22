@@ -7,27 +7,27 @@ Responsive multi-page site built with semantic HTML, CSS and vanilla JavaScript.
 
 ## Before you go live — 3 required steps
 
-### 1. Connect the contact form (5 minutes) — REQUIRED
+### 1. Connect the contact form on Vercel (about 5 minutes) — REQUIRED
 
-The form is fully built and tested, but email sending is **off by default**.
-Open `send-mail.php` and look at the block near the top.
+The site now uses a Vercel Serverless Function at `/api/contact` instead of PHP.
+Email is sent through the Resend HTTP API, so it works on Vercel's static hosting.
 
-Right now `SMTP_ENABLED` is `false`, so it falls back to PHP's `mail()`.
-That usually works, but Gmail frequently sends `mail()` messages to spam.
-**For reliable delivery, use SMTP:**
+1. Create a free Resend account: https://resend.com
+2. Create an API key in Resend.
+3. In Vercel open **Project → Settings → Environment Variables** and add:
+   - `RESEND_API_KEY` = your Resend API key
+   - `CONTACT_TO` = `raotipusultaan@gmail.com`
+   - `CONTACT_FROM` = `UK CAD Studio <onboarding@resend.dev>`
+4. Redeploy the project after adding the variables.
+5. Submit a test enquiry from the live website.
 
-1. Turn on 2-Step Verification: https://myaccount.google.com/security
-2. Create an App Password: https://myaccount.google.com/apppasswords
-3. In `send-mail.php` set:
-   ```php
-   const SMTP_ENABLED = true;
-   const SMTP_PASS    = 'your-16-character-app-password';
-   ```
-4. Send yourself a test enquiry from `contact.html`.
+For initial testing with `onboarding@resend.dev`, Resend normally allows delivery to the
+email address associated with your Resend account. If you later want to use a custom
+`From` address, verify a domain in Resend and change `CONTACT_FROM` in Vercel.
 
-Your normal Gmail password will **not** work — it must be an App Password.
-
-Never commit real credentials to a public Git repository.
+**Security:** never put API keys, Gmail passwords, App Passwords or other secrets in
+HTML, JavaScript, PHP, GitHub, or any file committed to the repository. Keep them only
+in Vercel Environment Variables.
 
 ### 2. Replace the illustrations with real photography — RECOMMENDED
 
@@ -86,7 +86,7 @@ terms.html              Terms of use
 
 styles.css              Original stylesheet + appended multi-page components
 script.js               Nav, dropdowns, reveals, slider, form validation
-send-mail.php           Form handler with built-in SMTP client
+api/contact.js          Vercel serverless contact-form handler
 
 sitemap.xml             All 33 indexable URLs
 robots.txt              Crawl rules
@@ -99,9 +99,9 @@ locations/              index + 12 location pages
 blog/                   index + 6 articles
 ```
 
-Links are **relative**, so the site works from a domain root, a subfolder, or
-opened directly from disk. The only exception is `send-mail.php`, which needs
-PHP — so the form requires real hosting to work.
+Most page links are relative. The contact form posts to `/api/contact`, so form
+submissions must be tested on the deployed Vercel site rather than by opening the HTML
+files directly from disk.
 
 ---
 

@@ -208,10 +208,19 @@
         button.textContent = 'Sending…';
       }
 
+      var payload = {};
+      new FormData(form).forEach(function (value, key) {
+        payload[key] = value;
+      });
+
       fetch(form.getAttribute('action'), {
         method: 'POST',
-        body: new FormData(form),
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify(payload)
       })
         .then(function (res) { return res.json().catch(function () { return { ok: res.ok }; }); })
         .then(function (data) {
