@@ -110,7 +110,7 @@
   // One Formspree endpoint is used by every enquiry/newsletter form on the site.
   // After creating a Formspree form, replace the placeholder below with the
   // endpoint Formspree gives you, e.g. https://formspree.io/f/abcdwxyz
-  var FORMSPREE_ENDPOINT = 'PASTE_FORMSPREE_ENDPOINT_HERE';
+  var FORMSPREE_ENDPOINT = 'https://formspree.io/f/xljdbwyl';
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
   function fieldWrap(input) {

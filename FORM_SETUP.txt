@@ -1,24 +1,19 @@
 UK CAD Studio - Contact Form Setup
 ==================================
 
-This project is now prepared for Formspree and no longer depends on PHP.
-That is important because the site is hosted on Vercel, where the old
-send-mail.php setup was not working.
+FORM IS CONNECTED
+-----------------
+All website forms are now connected to this Formspree endpoint:
+https://formspree.io/f/xljdbwyl
 
-TO ACTIVATE THE FORM
---------------------
-1. Create a Formspree account.
-2. Create one form in Formspree.
-3. Copy the endpoint. It looks like:
-   https://formspree.io/f/xxxxxxxx
-4. Open script.js.
-5. Near the Contact form section, find:
-   var FORMSPREE_ENDPOINT = 'PASTE_FORMSPREE_ENDPOINT_HERE';
-6. Replace only PASTE_FORMSPREE_ENDPOINT_HERE with the full Formspree URL.
-7. Save, upload/push the project to GitHub, and let Vercel redeploy.
+The form submission code is in script.js and every data-mail form also
+uses this endpoint as its HTML action.
 
-All project enquiry forms and newsletter forms will then use the same
-Formspree inbox.
-
-Recipient email should be configured inside Formspree as:
+IMPORTANT
+---------
+In Formspree, make sure the form's notification/target email is configured
+as:
 raotipusultaan@gmail.com
+
+No PHP, Resend API key, or Vercel environment variable is required for
+this form setup.
